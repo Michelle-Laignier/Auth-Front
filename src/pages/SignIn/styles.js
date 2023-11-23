@@ -18,6 +18,8 @@ export const Container = styled.div`
 
     @media screen and (max-width: 768px) {
       position: absolute;
+      top: 0;
+      left: 0;
       z-index: -1;
     }
   }
