@@ -49,9 +49,20 @@ export const Form = styled.div`
     border: none;
     font-size: 1.2rem;
     width: fit-content;
+    
+    @media screen and (max-width: 768px) {
+      background-color: ${({ theme }) => theme.COLORS.BTN};
+      border-radius: 5px;
+      padding: 0.5rem;
+    }
   }
 
   .createBtn:hover {
     color: ${({ theme }) => theme.COLORS.BTN};
+
+    @media screen and (max-width: 768px) {
+      background-color: ${({ theme }) => theme.COLORS.BTNHOVER};
+      color: ${({ theme }) => theme.COLORS.TEXT};
+    }
   }
 `
