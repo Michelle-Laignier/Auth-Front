@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { FaRegUser } from "react-icons/fa";
@@ -8,6 +8,7 @@ import { Container, Form } from "./styles"
 
 import { Input } from "../../components/Input"
 import { Button } from "../../components/Button"
+import { Modal } from "../../components/Modal"
 
 import signUp from "../../../src/assets/images/signUp.jpeg"
 
@@ -18,30 +19,56 @@ export function SignUp() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
+  const [showModal, setShowModal] = useState(false)
+  const [modalTitle, setModalTitle] = useState("")
+
   const navigate = useNavigate()
 
   function register() {
     if(!name || !email || !password) {
-      return alert("Preencha nome, e-mail e senha.")
-    } else if(!email.includes("@")) {
-      return alert("E-mail inválido.")
+      setShowModal(true)
+      setModalTitle("Preencha nome, e-mail e senha.")
+      return
+    } else if(!email.includes("@") || email.length < 5) {
+      setShowModal(true)
+      setModalTitle("E-mail inválido.")
+      return
     } else if(password.length < 6) {
-      return alert("A senha deve conter 6 caracteres no mínimo.")
+      setShowModal(true)
+      setModalTitle("A senha deve conter 6 caracteres no mínimo.")
+      return
     }
-    
+
+    setShowModal(true)
+    setModalTitle("Carregando, por favor aguarde");
+
     api.post("/users", {name, email, password})
     .then(() => {
-      alert("Usuário cadastrado com sucesso :D")
-      navigate("/")
+      setShowModal(true)
+      setModalTitle("Usuário cadastrado com sucesso :D")
+      setTimeout(() => {
+        navigate("/")
+      }, 2000)
     })
     .catch(error => {
       if(error.response) {
-        alert(error.response.data.message)
+        setShowModal(true)
+        setModalTitle(error.response.data.message)
+        return
       } else {
-        alert("Não foi possível cadastrar :(")
+        setShowModal(true)
+        setModalTitle("Não foi possível cadastrar :(")
+        return
       }
     })
   }
+
+  // Pra tirar as mensagens de erro quando o user começar a digitar:
+  useEffect(() => {
+    if(name.length > 0 || email.length > 0 || password.length > 0) {
+      setShowModal(false)
+    }
+  }, [name, email, password])
 
   function navigation() {
     navigate("/")
@@ -64,6 +91,9 @@ export function SignUp() {
         <button className="createBtn" onClick={navigation}>Voltar para o login</button>
       </Form>
 
+      <div>
+        {showModal && <Modal title={modalTitle} onClose={() => setShowModal(false)} />}
+      </div>
     </Container>
   )
 }
